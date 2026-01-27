@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Atlanta Int Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0b0f;
+      --bg-secondary: #12141a;
+      --bg-card: #1a1d24;
+      --peach: #f4a259;
+      --peach-light: #ffb87a;
+      --peach-glow: rgba(244, 162, 89, 0.25);
+      --sky: #7dd3fc;
+      --sky-light: #a5e4ff;
+      --sky-glow: rgba(125, 211, 252, 0.2);
+      --text-primary: #f0f4f8;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: rgba(255, 255, 255, 0.08);
+      --success: #4ade80;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(244, 162, 89, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(125, 211, 252, 0.08) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(244, 162, 89, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125, 211, 252, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 60px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      height: 72px;
+      width: auto;
+      filter: drop-shadow(0 4px 12px rgba(244, 162, 89, 0.3));
+    }
+
+    .header-text h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--peach-light), var(--sky-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .header-text p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .status-badge {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      padding: 10px 18px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .welcome-section {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .welcome-section h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .welcome-section p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Intersection Cards */
+    .intersection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .intersection-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 28px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intersection-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--peach), var(--sky));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .intersection-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--peach);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 40px var(--peach-glow);
+    }
+
+    .intersection-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--peach), var(--sky));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px var(--peach-glow);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .card-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .card-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--success);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .card-status .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    .card-arrow {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 18px;
+      transition: all 0.3s;
+    }
+
+    .intersection-card:hover .card-arrow {
+      background: var(--peach);
+      color: var(--bg-primary);
+      transform: translateX(4px);
+    }
+
+    /* Add more intersection placeholder */
+    .add-card {
+      background: transparent;
+      border: 2px dashed var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .add-card:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: var(--border);
+    }
+
+    .add-card .card-icon {
+      background: var(--bg-secondary);
+      box-shadow: none;
+    }
+
+    .add-card .card-title {
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--peach);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--sky);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .status-badge {
+        margin-left: 0;
+      }
+
+      .header-text h1 {
+        font-size: 1.8rem;
+      }
+
+      .intersection-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+  <div class="bg-grid"></div>
+
+  <div class="container">
+    <header>
+      <img src="/images/logo.png" alt="Atlanta Logo" class="logo">
+      <div class="header-text">
+        <h1>Atlanta Int Monitor</h1>
+        <p>Real-time intersection traffic analytics</p>
+      </div>
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        <span>System Online</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="welcome-section">
+        <h2>Traffic Monitoring Dashboard</h2>
+        <p>Select an intersection below to view real-time traffic flow data, vehicle counts, and movement statistics from FLOW Insights.</p>
+      </section>
+
+      <div class="intersection-grid">
+        <a href="/Ponce-and-Clifton" class="intersection-card">
+          <div class="card-icon">🚦</div>
+          <div class="card-title">Ponce & Clifton</div>
+          <div class="card-description">
+            Major corridor intersection monitoring with real-time vehicle tracking and movement analysis.
+          </div>
+          <div class="card-status">
+            <span class="dot"></span>
+            <span>LIVE • Receiving data</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <div class="intersection-card add-card">
+          <div class="card-icon">+</div>
+          <div class="card-title">Add Intersection</div>
+          <div class="card-description">
+            Configure additional intersection monitoring points.
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>Atlanta Int Monitor • FLOW Insights Integration</span>
+      <span>Webhook endpoint: <a href="/webhook">/webhook</a></span>
+    </footer>
+  </div>
+</body>
+</html>
