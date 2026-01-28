@@ -218,25 +218,25 @@
       text-align: center;
     }
 
-    .arm-box.top { 
+    .arm-box.north { 
       top: 0; 
       left: 50%; 
       transform: translateX(-50%);
       border-color: var(--arm3-color);
     }
-    .arm-box.bottom { 
+    .arm-box.south { 
       bottom: 0; 
       left: 50%; 
       transform: translateX(-50%);
       border-color: var(--arm7-color);
     }
-    .arm-box.left { 
+    .arm-box.west { 
       left: 0; 
       top: 50%; 
       transform: translateY(-50%);
       border-color: var(--arm5-color);
     }
-    .arm-box.right { 
+    .arm-box.east { 
       right: 0; 
       top: 50%; 
       transform: translateY(-50%);
@@ -252,10 +252,10 @@
       font-size: 11px;
     }
 
-    .arm-box.top .arm-name { background: var(--arm3-color); }
-    .arm-box.bottom .arm-name { background: var(--arm7-color); }
-    .arm-box.left .arm-name { background: var(--arm5-color); }
-    .arm-box.right .arm-name { background: var(--arm1-color); }
+    .arm-box.north .arm-name { background: var(--arm3-color); }
+    .arm-box.south .arm-name { background: var(--arm7-color); }
+    .arm-box.west .arm-name { background: var(--arm5-color); }
+    .arm-box.east .arm-name { background: var(--arm1-color); }
 
     .arm-stats {
       font-family: 'JetBrains Mono', monospace;
@@ -531,10 +531,10 @@
     <!-- Info Section -->
     <div class="info-section">
       <div class="arm-labels" id="armLabels">
-        <div class="arm-label"><span class="arm-color arm1"></span> Arm 1: Right Arm 1</div>
-        <div class="arm-label"><span class="arm-color arm3"></span> Arm 3: Top Arm 3</div>
-        <div class="arm-label"><span class="arm-color arm5"></span> Arm 5: Left Arm 5</div>
-        <div class="arm-label"><span class="arm-color arm7"></span> Arm 7: Bottom Arm 7</div>
+        <div class="arm-label"><span class="arm-color arm1"></span> Arm 1: East Arm 1</div>
+        <div class="arm-label"><span class="arm-color arm3"></span> Arm 3: North Arm 3</div>
+        <div class="arm-label"><span class="arm-color arm5"></span> Arm 5: West Arm 5</div>
+        <div class="arm-label"><span class="arm-color arm7"></span> Arm 7: South Arm 7</div>
       </div>
       <div class="date-info" id="dateInfo">
         <div><span class="label">Date:</span> <span class="value" id="dateValue">--</span></div>
@@ -546,20 +546,20 @@
     <!-- Flow Diagram -->
     <div class="flow-section">
       <div class="intersection-diagram" id="intersectionDiagram">
-        <div class="arm-box top">
-          <div class="arm-name" id="arm3Name">T (Arm 3)</div>
+        <div class="arm-box north">
+          <div class="arm-name" id="arm3Name">N (Arm 3)</div>
           <div class="arm-stats" id="arm3Stats">--</div>
         </div>
-        <div class="arm-box right">
-          <div class="arm-name" id="arm1Name">R (Arm 1)</div>
+        <div class="arm-box east">
+          <div class="arm-name" id="arm1Name">E (Arm 1)</div>
           <div class="arm-stats" id="arm1Stats">--</div>
         </div>
-        <div class="arm-box bottom">
-          <div class="arm-name" id="arm7Name">B (Arm 7)</div>
+        <div class="arm-box south">
+          <div class="arm-name" id="arm7Name">S (Arm 7)</div>
           <div class="arm-stats" id="arm7Stats">--</div>
         </div>
-        <div class="arm-box left">
-          <div class="arm-name" id="arm5Name">L (Arm 5)</div>
+        <div class="arm-box west">
+          <div class="arm-name" id="arm5Name">W (Arm 5)</div>
           <div class="arm-stats" id="arm5Stats">--</div>
         </div>
         <svg class="flow-center" viewBox="0 0 200 200">
@@ -609,10 +609,10 @@
     <!-- Chart Section -->
     <div class="chart-section">
       <div class="chart-legend" id="chartLegend">
-        <div class="legend-item"><span class="legend-color" style="background:rgba(239,83,80,0.5);border:2px solid #ef5350;"></span> <span id="leg1">Arm 1 (R)</span></div>
-        <div class="legend-item"><span class="legend-color" style="background:rgba(102,187,106,0.5);border:2px solid #66bb6a;"></span> <span id="leg3">Arm 3 (T)</span></div>
-        <div class="legend-item"><span class="legend-color" style="background:rgba(255,202,40,0.5);border:2px solid #ffca28;"></span> <span id="leg5">Arm 5 (L)</span></div>
-        <div class="legend-item"><span class="legend-color" style="background:rgba(66,165,245,0.5);border:2px solid #42a5f5;"></span> <span id="leg7">Arm 7 (B)</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:rgba(239,83,80,0.5);border:2px solid #ef5350;"></span> <span id="leg1">Arm 1 (E)</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:rgba(102,187,106,0.5);border:2px solid #66bb6a;"></span> <span id="leg3">Arm 3 (N)</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:rgba(255,202,40,0.5);border:2px solid #ffca28;"></span> <span id="leg5">Arm 5 (W)</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:rgba(66,165,245,0.5);border:2px solid #42a5f5;"></span> <span id="leg7">Arm 7 (S)</span></div>
       </div>
       <div class="chart-container">
         <canvas id="timeChart"></canvas>
@@ -777,8 +777,8 @@
     }
 
     // Arm position to label mapping (from FLOW cartogram)
-    const armLabels = { 1: 'R', 3: 'T', 5: 'L', 7: 'B' };
-    const armFullNames = { 1: 'Right', 3: 'Top', 5: 'Left', 7: 'Bottom' };
+    const armLabels = { 1: 'E', 3: 'N', 5: 'W', 7: 'S' };
+    const armFullNames = { 1: 'East', 3: 'North', 5: 'West', 7: 'South' };
 
     function updateDisplay(data) {
       const innerData = data.data || data;
