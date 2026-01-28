@@ -7,8 +7,6 @@ import re
 import mimetypes
 from datetime import datetime
 import json
-import requests
-from requests.auth import HTTPBasicAuth
 
 # Try to import psycopg2, but don't crash if not installed
 try:
@@ -282,74 +280,5 @@ def serve_logo():
     return send_from_directory(images_dir, 'logo.png')
 
 
-# Camera Configuration
-CAMERA_CONFIG = {
-    'north': os.getenv('CAMERA_NORTH_IP', '192.168.1.1'),
-    'south': os.getenv('CAMERA_SOUTH_IP', '192.168.1.2'),
-    'east': os.getenv('CAMERA_EAST_IP', '192.168.1.3'),
-    'west': os.getenv('CAMERA_WEST_IP', '192.168.1.4'),
-}
-
-CAMERA_USERNAME = os.getenv('CAMERA_USERNAME', 'root')
-CAMERA_PASSWORD = os.getenv('CAMERA_PASSWORD', '360Network')
-
-
-@app.route('/api/camera/<arm>', methods=['GET'])
-def proxy_camera(arm):
-    """
-    Proxy MJPEG stream from Axis camera.
-    Handles HTTP Basic Auth and streams the video feed to the frontend.
-    """
-    arm = arm.lower()
-    
-    if arm not in CAMERA_CONFIG:
-        return jsonify({"error": "Invalid arm. Must be: north, south, east, or west"}), 400
-    
-    camera_ip = CAMERA_CONFIG[arm]
-    
-    # Construct Axis MJPEG URL
-    camera_url = f'http://{camera_ip}/axis-cgi/mjpg/video.cgi'
-    
-    try:
-        # Stream the MJPEG feed with Basic Auth
-        response = requests.get(
-            camera_url,
-            auth=HTTPBasicAuth(CAMERA_USERNAME, CAMERA_PASSWORD),
-            stream=True,
-            timeout=10
-        )
-        
-        if response.status_code != 200:
-            return jsonify({
-                "error": f"Camera returned status {response.status_code}",
-                "camera": arm,
-                "url": camera_url
-            }), response.status_code
-        
-        # Return the MJPEG stream with appropriate headers
-        def generate():
-            try:
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:
-                        yield chunk
-            except Exception as e:
-                print(f"Stream error for {arm}: {e}")
-        
-        return generate(), 200, {
-            'Content-Type': response.headers.get('Content-Type', 'multipart/x-mixed-replace; boundary=myboundary'),
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        }
-    
-    except requests.exceptions.Timeout:
-        return jsonify({"error": "Camera connection timeout", "camera": arm}), 504
-    except requests.exceptions.ConnectionError:
-        return jsonify({"error": "Could not connect to camera", "camera": arm}), 503
-    except Exception as e:
-        print(f"Camera proxy error: {e}")
-        return jsonify({"error": str(e), "camera": arm}), 500
-
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(port=5000, debug=True)
