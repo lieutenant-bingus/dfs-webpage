@@ -562,12 +562,12 @@
           <div class="arm-name" id="arm5Name">W (Arm 5)</div>
           <div class="arm-stats" id="arm5Stats">--</div>
         </div>
-        <svg class="flow-center" viewBox="0 0 200 200">
-          <!-- Flow lines showing traffic between arms -->
-          <path d="M 0,90 Q 100,90 100,100 Q 100,110 200,110" stroke="#ffca28" stroke-width="12" fill="none" opacity="0.7"/>
-          <path d="M 200,90 Q 100,90 100,100 Q 100,110 0,110" stroke="#ef5350" stroke-width="8" fill="none" opacity="0.7"/>
-          <path d="M 90,0 Q 90,100 100,100 Q 110,100 110,200" stroke="#66bb6a" stroke-width="10" fill="none" opacity="0.7"/>
-          <path d="M 110,0 Q 110,100 100,100 Q 90,100 90,200" stroke="#42a5f5" stroke-width="6" fill="none" opacity="0.7"/>
+        <svg class="flow-center" viewBox="0 0 200 200" id="flowDiagram">
+          <!-- Flow lines showing traffic between arms - updated dynamically -->
+          <path id="flowPath5" d="M 0,90 Q 100,90 100,100 Q 100,110 200,110" stroke="#ffca28" stroke-width="2" fill="none" opacity="0.7"/>
+          <path id="flowPath1" d="M 200,90 Q 100,90 100,100 Q 100,110 0,110" stroke="#ef5350" stroke-width="2" fill="none" opacity="0.7"/>
+          <path id="flowPath3" d="M 90,0 Q 90,100 100,100 Q 110,100 110,200" stroke="#66bb6a" stroke-width="2" fill="none" opacity="0.7"/>
+          <path id="flowPath7" d="M 110,0 Q 110,100 100,100 Q 90,100 90,200" stroke="#42a5f5" stroke-width="2" fill="none" opacity="0.7"/>
         </svg>
       </div>
     </div>
@@ -776,6 +776,25 @@
       return { 1: 'arm1', 3: 'arm3', 5: 'arm5', 7: 'arm7' }[armNum] || 'arm1';
     }
 
+    function updateFlowDiagram(armTotals) {
+      // Calculate stroke widths based on vehicle volumes
+      // Scale from 2px (min) to 20px (max) based on the maximum volume
+      const maxVolume = Math.max(armTotals[1] || 0, armTotals[3] || 0, armTotals[5] || 0, armTotals[7] || 0);
+      const minStroke = 2;
+      const maxStroke = 20;
+      
+      const calculateStroke = (volume) => {
+        if (maxVolume === 0) return minStroke;
+        return minStroke + ((volume / maxVolume) * (maxStroke - minStroke));
+      };
+      
+      // Update each flow path with calculated stroke width
+      document.getElementById('flowPath1').setAttribute('stroke-width', calculateStroke(armTotals[1] || 0));
+      document.getElementById('flowPath3').setAttribute('stroke-width', calculateStroke(armTotals[3] || 0));
+      document.getElementById('flowPath5').setAttribute('stroke-width', calculateStroke(armTotals[5] || 0));
+      document.getElementById('flowPath7').setAttribute('stroke-width', calculateStroke(armTotals[7] || 0));
+    }
+
     // Arm position to label mapping (from FLOW cartogram)
     const armLabels = { 1: 'E', 3: 'N', 5: 'W', 7: 'S' };
     const armFullNames = { 1: 'East', 3: 'North', 5: 'West', 7: 'South' };
@@ -880,6 +899,9 @@
         document.getElementById('arm3Stats').textContent = `${armTotals[3]} vehicles`;
         document.getElementById('arm5Stats').textContent = `${armTotals[5]} vehicles`;
         document.getElementById('arm7Stats').textContent = `${armTotals[7]} vehicles`;
+        
+        // Update flow diagram stroke widths based on arm volumes
+        updateFlowDiagram(armTotals);
         
         // Update arm labels in the info section
         updateArmLabels(movements);
