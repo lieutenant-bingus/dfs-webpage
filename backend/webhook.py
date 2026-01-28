@@ -9,6 +9,12 @@ from datetime import datetime
 import json
 import requests
 from requests.auth import HTTPBasicAuth
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
 
 # Try to import psycopg2, but don't crash if not installed
 try:
